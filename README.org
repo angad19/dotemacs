@@ -5,6 +5,32 @@
 * About
   I'm Angad Singh, a high school student from New Delhi, India. I mostly use Emacs for writing code and taking notes with =org-mode=. I'm member at [[http://dpsrkp.net][Delhi Public School, R.K. Puram's]] computer club, [[http://exunclan.com][Exun Clan]] where I work with the quizzing and web development departments. This mostly involves PHP on the backend and a lot of frontend JavaScript. I also write a lot of JavaScript on the backend for side projects and (sometimes) paid jobs. I like to hack around with stuff that I might get to work with in the future, this includes languages like Python and Go. This config is highly inspired by Mike Zamansky's [[http://cestlaz.github.io/stories/emacs/][Using Emacs]] series. I've tried to read documentation for and understand everything in this file, in case you see my elisp-fu falter feel free to submit an issue on this repo and tell me about it.
 
+* Installation
+  1. Make sure you have emacs installed.
+     Install on MacOS - 
+     #+BEGIN_SRC sh
+       # Uninstall any previous versions
+       brew uninstall emacs
+       # Check if your homebrew is okay
+       brew cleanup
+       brew doctor
+       # Update and upgrade everything
+       brew update
+       brew upgrade
+       # Install emacs
+       brew install emacs --with-cocoa --with-gnutls --with-rsvg --with-imagemagick
+     #+END_SRC
+     Install on Debain-based distros - 
+     #+BEGIN_SRC sh
+       sudo apt install emacs
+     #+END_SRC
+  2. Clone this repo
+     #+BEGIN_SRC sh
+       mv ~/.emacs.d ~/.emacs.d.bak
+       git clone https://github.com/angad19/dotemacs.git ~/.emacs.d
+     #+END_SRC
+  3. And you're done!
+
 * Set user details
   Set =user-full-name= and =user-mail-address=.
   #+BEGIN_SRC emacs-lisp
@@ -89,6 +115,12 @@
    #+BEGIN_SRC emacs-lisp
      (winner-mode 1)
    #+END_SRC
+
+* global-visual-line-mode
+  Tell emacs to use visual-lines
+  #+BEGIN_SRC emacs-lisp
+    (global-visual-line-mode 1)
+  #+END_SRC
 
 ** Don't use tabs
    #+BEGIN_SRC emacs-lisp
