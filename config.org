@@ -1,0 +1,691 @@
+#+TITLE: Angad Singh's Emacs Config
+#+AUTHOR: Angad Singh
+#+OPTIONS: TOC:NIL
+
+* About
+  I'm Angad Singh, a high school student from New Delhi, India. I mostly use Emacs for writing code and taking notes with =org-mode=. I'm member at [[http://dpsrkp.net][Delhi Public School, R.K. Puram's]] computer club, [[http://exunclan.com][Exun Clan]] where I work with the quizzing and web development departments. This mostly involves PHP on the backend and a lot of frontend JavaScript. I also write a lot of JavaScript on the backend for side projects and (sometimes) paid jobs. I like to hack around with stuff that I might get to work with in the future, this includes languages like Python and Go. This config is highly inspired by Mike Zamansky's [[http://cestlaz.github.io/stories/emacs/][Using Emacs]] series. I've tried to read documentation for and understand everything in this file, in case you see my elisp-fu falter feel free to submit an issue on this repo and tell me about it.
+
+* Set user details
+  Set =user-full-name= and =user-mail-address=.
+  #+BEGIN_SRC emacs-lisp
+    (setq user-full-name "Angad Singh")
+    (setq user-mail-address "angadsingh567890@gmail.com")
+  #+END_SRC
+
+* Package management
+  I use Emacs' =package.el= and =use-package= to install and configure packages.
+** Setup =package.el=
+   I like to activate packages after Emacs is done reading the init file because it might mess up the package's config.
+   #+BEGIN_SRC emacs-lisp
+     (require 'package)
+     (setq package-enable-at-startup nil)
+   #+END_SRC
+
+** Add repositories
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'package-archives
+                  '("melpa" . "https://melpa.org/packages/"))
+     (add-to-list 'package-archives
+                  '("gnu" . "https://elpa.gnu.org/packages/"))
+     (add-to-list 'package-archives
+                  '("org" . "http://orgmode.org/elpa/"))
+   #+END_SRC
+
+** Initialize
+   #+BEGIN_SRC emacs-lisp
+     (package-initialize)
+   #+END_SRC
+
+** Bootstrap use-package
+   [[https://github.com/jwiegley/use-package][use-package]] is a nicer way to install and configure packages.
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'use-package)
+             (package-refresh-contents)
+             (package-install 'use-package))
+   #+END_SRC
+
+* Interface changes
+** Startup changes
+   Remove the startup message and change the message in the scratch buffer.
+   #+BEGIN_SRC emacs-lisp
+     (setq start-message ";; angad")
+     (setq inhibit-startup-message t)
+     (setq initial-scratch-message start-message)
+     (setq inhibit-startup-echo-area-message start-message)
+   #+END_SRC
+
+** Replace =list-buffers= with =ibuffer=
+   #+BEGIN_SRC emacs-lisp
+     (defalias 'list-buffers 'ibuffer)
+   #+END_SRC
+
+** Line numbers
+   #+BEGIN_SRC emacs-lisp
+     (setq linum-format "%4d ")
+     (add-hook 'prog-mode-hook (lambda () (linum-mode 1)))
+   #+END_SRC
+
+** Disable the scrollbar
+   #+BEGIN_SRC emacs-lisp
+     (scroll-bar-mode 0)
+   #+END_SRC
+   
+** Use y-or-n instead of yes-or-no
+   #+BEGIN_SRC emacs-lisp
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+** Show matching parens
+   #+BEGIN_SRC emacs-lisp
+     (show-paren-mode 1)
+   #+END_SRC
+
+** Automatically revert buffer on changes
+   #+BEGIN_SRC emacs-lisp
+     (global-auto-revert-mode t)
+   #+END_SRC
+
+** Record changes in the window configuration
+   #+BEGIN_SRC emacs-lisp
+     (winner-mode 1)
+   #+END_SRC
+
+** Don't use tabs
+   #+BEGIN_SRC emacs-lisp
+     (setq indent-tabs-mode nil)
+     (setq tab-width 2)
+     (setq c-basic-offset 2)
+     (setq cperl-indent-level 2)
+     (setq js2-basic-offset 2)
+     (setq css-indent-offset 2)
+   #+END_SRC
+
+* Miscellaneous packages
+** try
+   Try packages before installing them.
+   #+BEGIN_SRC emacs-lisp
+     (use-package try
+       :ensure t)
+   #+END_SRC
+
+** which-key
+   Bring up help on key combinations.
+   #+BEGIN_SRC emacs-lisp
+     (use-package which-key
+       :ensure t
+       :config (which-key-mode))
+   #+END_SRC
+
+** ace-window
+   Switch windows faster
+   #+BEGIN_SRC emacs-lisp
+     (use-package ace-window
+       :ensure t
+       :bind ("C-x o" . ace-window))
+   #+END_SRC
+
+** expand-region
+   Great way to mark text. I usually bind it to C-=.
+   #+BEGIN_SRC emacs-lisp
+     (use-package expand-region
+       :ensure t
+       :config (global-set-key (kbd "C-=") 'er/expand-region))
+   #+END_SRC
+
+** undo-tree
+   Show a tree of your undos.
+   #+BEGIN_SRC emacs-lisp
+     (use-package undo-tree
+       :ensure t
+       :config (global-undo-tree-mode))
+   #+END_SRC
+
+** iedit
+   Edit multiple things at once.
+   #+BEGIN_SRC emacs-lisp
+     (use-package iedit
+       :ensure t)
+   #+END_SRC
+
+** ranger
+   A file manager inside emacs. Based on dired and ranger.
+   #+BEGIN_SRC emacs-lisp
+     (use-package ranger
+       :ensure t)
+   #+END_SRC
+
+** smartparens
+   Deal with delimiters better.
+   #+BEGIN_SRC emacs-lisp
+     (use-package smartparens
+       :ensure t
+       :config
+       (require 'smartparens-config)
+       (add-hook 'prog-mode-hook (lambda () (smartparens-mode))))
+   #+END_SRC
+
+* Flycheck
+  On-the-fly syntax checking.
+  #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :config
+      (global-flycheck-mode))
+  #+END_SRC
+
+* Projectile
+  Project management in Emacs.
+  #+BEGIN_SRC emacs-lisp
+    (use-package projectile
+      :ensure t
+      :config
+      (projectile-global-mode))
+  #+END_SRC
+
+* counsel, ivy and swiper
+** ivy
+	 A completion framework for Emacs.
+	 #+BEGIN_SRC emacs-lisp
+		 (use-package ivy
+			 :ensure t
+			 :diminish (ivy-mode)
+			 :bind (("C-x b" . ivy-switch-buffer))
+			 :config
+			 (ivy-mode 1)
+			 (setq ivy-use-virtual-buffers t)
+			 (setq ivy-count-format "%d/%d ")
+			 (setq ivy-display-style 'fancy))
+	 #+END_SRC
+
+** counsel
+   A collection of Ivy-enhanced versions of common Emacs commands.
+   #+BEGIN_SRC emacs-lisp
+     (use-package counsel
+       :ensure t
+       :bind
+       (("M-y" . counsel-yank-pop)
+	:map ivy-minibuffer-map
+	("M-y" . ivy-next-line)))
+   #+END_SRC
+
+** swiper
+   An Ivy-enhanced alternative to Isearch.
+   #+BEGIN_SRC emacs-lisp
+     (use-package swiper
+       :ensure t
+       :bind (("C-s" . swiper)
+              ("C-r" . swiper)
+              ("C-c C-r" . ivy-resume)
+              ("M-x" . counsel-M-x)
+              ("C-x C-g" . counsel-ag)
+              ("C-x C-f" . counsel-find-file))
+       :config
+       (progn
+         (ivy-mode 1)
+         (setq ivy-use-virtual-buffers t)
+         (setq ivy-display-style 'fancy)
+         (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+   #+END_SRC
+
+* Magit
+  The best git porcelain ever made. It's become a poster child for good interfaces.
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :ensure t
+      :bind
+      ("C-x m" . magit)
+      ("C-x p" . magit-push-to-remote))
+  #+END_SRC
+
+* Backup files
+** Don't create =backup~= files.
+   #+BEGIN_SRC emacs-lisp
+     (setq make-backup-files nil)
+   #+END_SRC
+
+** Don't create =#autosave#= files.
+   #+BEGIN_SRC emacs-lisp
+     (setq auto-save-default nil)
+   #+END_SRC
+
+* Custom minor-modes
+** =my/hidden-mode-line-mode=
+   Minor mode to hide the modeline in the buffer.
+   [[https://emacs-doctor.com/emacs-strip-tease.html][Here]] and [[http://bzg.fr/emacs-hide-mode-line.html][here]].
+   #+BEGIN_SRC emacs-lisp
+     (defvar-local my/hidden-mode-line-mode nil)
+     (defvar-local hide-mode-line nil)
+     (define-minor-mode my/hidden-mode-line-mode
+       "Minor mode to hide the mode-line in the current buffer."
+       :init-value nil
+       :global nil
+       :variable my/hidden-mode-line-mode
+       :group 'editing-basics
+       (if my/hidden-mode-line-mode
+	   (setq hide-mode-line mode-line-format
+		 mode-line-format nil)
+	 (setq mode-line-format hide-mode-line
+	       hide-mode-line nil))
+       (force-mode-line-update)
+       ;; Apparently force-mode-line-update is not always enough to
+       ;; redisplay the mode-line
+       (redraw-display)
+       (when (and (called-interactively-p 'interactive)
+		  my/hidden-mode-line-mode)
+	 (run-with-idle-timer
+	  0 nil 'message
+	  (concat "Hidden Mode Line Mode enabled.  "
+		  "Use M-x my/hidden-mode-line-mode to make the mode-line appear."))))
+   #+END_SRC
+
+** =my/big-fringe-mode=
+   A small minor mode to use a big fringe.
+   [[https://emacs-doctor.com/emacs-strip-tease.html][Here]].
+   #+BEGIN_SRC emacs-lisp
+     (defvar my/big-fringe-mode nil)
+     (define-minor-mode my/big-fringe-mode
+       "A small minor mode to use a big fringe."
+       :init-value nil
+       :global t
+       :variable my/big-fringe-mode
+       :group 'editing-basics
+       (if (not bzg-big-fringe-mode)
+           (set-fringe-style nil)
+         (set-fringe-mode
+          (/ (- (frame-pixel-width)
+               	(* 100 (frame-char-width)))
+             2))))
+     ;; Activate with
+     ;; (my/big-fringe-mode 1)
+   #+END_SRC
+
+* Aesthetics
+** Font
+   Set font to Noto Mono.
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline" ))
+     (set-face-attribute 'default t :font "Noto Mono for Powerline")
+   #+END_SRC
+
+** Fringe
+   Change the color so that it doesn't look awkward.
+   #+BEGIN_SRC emacs-lisp
+     (if (display-graphic-p)
+         (set-face-attribute 'fringe nil :background nil))
+   #+END_SRC
+
+** Theme
+   #+BEGIN_SRC emacs-lisp
+     (use-package nord-theme
+       :ensure t
+       :config
+       (if (display-graphic-p)
+	   (load-theme 'nord)))
+   #+END_SRC
+
+** Modeline
+*** Show battery percentage and time in the modeline
+    #+BEGIN_SRC emacs-lisp
+      ;; (display-battery-mode 1)
+      ;; (display-time-mode 1)
+    #+END_SRC
+
+*** smart-mode-line
+   #+BEGIN_SRC emacs-lisp
+     (use-package smart-mode-line
+       :ensure t
+       :config
+       (setq sml/theme 'respectful)
+       (sml/setup))
+   #+END_SRC
+
+*** Make the modeline look better
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'mode-line nil
+			 :height 120
+			 :box '(:line-width 2 :color "#4C566A"))
+     (set-face-attribute 'mode-line-inactive nil
+			 :height 120
+			 :box '(:line-width 2 :color "#3B4252"))
+   #+END_SRC
+
+** Change cursor
+   #+BEGIN_SRC emacs-lisp
+     (setq-default cursor-type '(bar . 1))
+   #+END_SRC
+* eshell
+** Bind a key to eshel
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "M-s e") 'eshell)
+   #+END_SRC
+
+** exec-path-from-shell
+   Keep shell environment variables and emacs variables in sync.
+   #+BEGIN_SRC emacs-lisp
+     (use-package exec-path-from-shell
+       :ensure t
+       :config
+       (exec-path-from-shell-initialize))
+   #+END_SRC
+
+** Aliases
+   #+BEGIN_SRC emacs-lisp
+     (defalias 'ff 'find-file)
+     (defalias 'ffo 'find-file-other-window)
+   #+END_SRC
+
+** Prompt
+   #+BEGIN_SRC emacs-lisp
+     ;; (setq eshell-prompt-function
+     ;;   (lambda nil
+     ;;     (concat
+     ;;      (eshell/pwd)
+     ;;      " $ ")))
+     (use-package eshell-git-prompt
+       :ensure t
+       :config (eshell-git-prompt-use-theme 'robbyrussell))
+   #+END_SRC
+
+* Code completion
+  I like to use company-mode over autocomplete.el for code completion.
+  #+BEGIN_SRC emacs-lisp
+    (use-package company
+      :ensure t
+      :config
+      (add-hook 'after-init-hook 'global-company-mode)
+      (setq company-idle-delay 0)
+      (global-set-key (kbd "C-c /") 'company-files))
+  #+END_SRC
+
+* Major modes
+** yaml-mode
+   Major mode for =YAML= files.
+   #+BEGIN_SRC emacs-lisp
+     (use-package yaml-mode
+       :ensure t)
+   #+END_SRC
+
+* Python
+** Switch between python2 and python3
+   #+BEGIN_SRC emacs-lisp
+     (defun my/set-py3 ()
+       "Set python3 as the python shell interpreter and default python command."
+       (interactive)
+       (setq py-python-command "python3")
+       (setq python-shell-interpreter "python3")
+       (message "Interpreter changed to python3"))
+
+     (defun my/set-py2 ()
+       "Set python2 as the python shell interpreter and default python command."
+       (interactive)
+       (setq py-python-command "python")
+       (setq python-shell-interpreter "python")
+       (message "Interpreter changed to python2"))
+
+     (my/set-py3)
+   #+END_SRC
+
+** company-jedi
+   Jedi backend for =company-mode=.
+   #+BEGIN_SRC emacs-lisp
+     (use-package company-jedi
+       :ensure t)
+   #+END_SRC
+
+** elpy
+   Emacs Python Development Environment.
+   #+BEGIN_SRC emacs-lisp
+     (use-package elpy
+       :ensure t
+       :config (elpy-enable))
+   #+END_SRC
+
+** Custom python-mode hook
+   #+BEGIN_SRC emacs-lisp
+     (defun my/python-mode-hook ()
+       (add-to-list 'company-backends 'company-jedi))
+     (add-hook 'python-mode-hook 'my/python-mode-hook)
+   #+END_SRC
+
+* Web
+** PHP
+*** php-mode
+    Major mode for PHP.
+    #+BEGIN_SRC emacs-lisp
+      (use-package php-mode
+        :ensure t)
+      (add-hook 'php-mode-hook 'my-php-mode-hook)
+      (defun my-php-mode-hook ()
+        "My PHP mode configuration."
+        (setq indent-tabs-mode nil)
+        (setq tab-width 2)
+        (setq c-basic-offset 2))
+    #+END_SRC
+** JavaScript
+*** js2-mode
+    JavaScript major mode.
+    #+BEGIN_SRC emacs-lisp
+      (use-package js2-mode
+        :ensure t
+        :config
+        (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+        (setq js2-strict-missing-semi-warning nil))
+      (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+    #+END_SRC
+
+*** indium
+    JavaScript development environment.
+    #+BEGIN_SRC emacs-lisp
+      (use-package indium
+        :ensure t)
+    #+END_SRC
+
+*** rjsx-mode
+    Major-mode for React JSX files.
+    #+BEGIN_SRC emacs-lisp
+      (use-package rjsx-mode
+        :ensure t
+        :config
+        (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode)))
+    #+END_SRC
+
+*** JSON mode
+    Major-mode JSON files. =C-c C-f= to format.
+    #+BEGIN_SRC emacs-lisp
+      (use-package json-mode
+        :ensure t
+        :config
+        (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
+      (defun my/json-mode-hook()
+        (setq indent-tabs-mode nil)
+        (setq js-indent-level 2)
+        (setq tab-width 2))
+      (add-hook 'json-mode 'my/json-mode-hook)
+    #+END_SRC
+** web-mode
+   Allows you to edit files that regular html-mode doesn't play nice with.
+   #+BEGIN_SRC emacs-lisp
+     (use-package web-mode
+       :ensure t
+       :config
+       (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+       (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+     (defun my-web-mode-hook ()
+       "Hooks for Web mode."
+       (setq web-mode-markup-indent-offset 2)
+       (setq web-mode-css-indent-offset 2)
+       (setq web-mode-code-indent-offeset 2)
+       (setq indent-tabs-mode t))
+     (add-hook 'web-mode-hook  'my-web-mode-hook)
+   #+END_SRC
+
+** emmet-mode
+   Write HTML faster.
+   #+BEGIN_SRC emacs-lisp
+     (use-package emmet-mode
+       :ensure t
+       :config (add-hook 'web-mode-hook (lambda () (emmet-mode 1))))
+   #+END_SRC
+
+** less-css-mode
+   Major-mode for less files.
+   #+BEGIN_SRC emacs-lisp
+     (use-package less-css-mode
+       :ensure t)
+   #+END_SRC
+
+** markdown-mode
+   Major mode for markdown files.
+   #+BEGIN_SRC emacs-lisp
+     (use-package markdown-mode
+       :ensure t)
+   #+END_SRC
+
+** pug-mode
+   Major-mode for pug markup.
+   #+BEGIN_SRC emacs-lisp
+     (use-package pug-mode
+       :ensure t)
+   #+END_SRC
+
+** restclient.el
+   Test REST APIs from inside emacs.
+   #+BEGIN_SRC emacs-lisp
+     (use-package restclient
+       :ensure t)
+   #+END_SRC
+
+* elfeed
+  An RSS client for emacs.
+  #+BEGIN_SRC emacs-lisp
+    (use-package elfeed
+      :ensure t
+      :bind (:map elfeed-search-mode-map
+                  ("q" . bjm/elfeed-save-db-and-bury)))
+    (global-set-key (kbd "C-x w") 'bjm/elfeed-load-db-and-open)
+  #+END_SRC
+
+** Set elfeed feeds
+   #+BEGIN_SRC emacs-lisp
+     (setq elfeed-feeds
+           '(("http://nullprogram.com/feed/" emacs cs linux)
+             ("https://xkcd.com/rss.xml" webcomics)
+             ("http://angad19.github.io/blog/feed.xml" emacs cs)
+             ("http://cestlaz.github.io/rss.xml" emacs education cs)
+             ("http://pragmaticemacs.com/feed/" emacs)
+             ("http://sachachua.com/blog/feed/" emacs)
+             ("https://mdk.fr/feeds/all.atom.xml" emacs cs python)
+             ("http://emacsblog.org/feed/" emacs)
+             ("https://kieranhealy.org/index.xml" emacs sociology)
+             ("https://www.classandobjects.com/index.xml" rails react vue)))
+   #+END_SRC
+
+** elfeed-goodies
+   Make elfeed nicer.
+   #+BEGIN_SRC emacs-lisp
+     (use-package elfeed-goodies
+       :ensure t
+       :config (elfeed-goodies/setup))
+   #+END_SRC
+
+** elfeed-helper-functions
+   Functions to support .elfeed between machines. [[http://pragmaticemacs.com/emacs/read-your-rss-feeds-in-emacs-with-elfeed/][Here]].
+*** Makes sure elfeed reads index from disk before launching.
+    #+BEGIN_SRC emacs-lisp
+      (defun bjm/elfeed-load-db-and-open ()
+        "Wrapper to load the elfeed db from disk before opening"
+        (interactive)
+        (elfeed-db-load)
+        (elfeed)
+        (elfeed-search-update--force))
+    #+END_SRC
+*** Write to disk when quiting.
+    #+BEGIN_SRC emacs-lisp
+      (defun bjm/elfeed-save-db-and-bury ()
+        "Wrapper to save the elfeed db to disk before burying buffer"
+        (interactive)
+        (elfeed-db-save)
+        (quit-window))
+    #+END_SRC
+
+* org-mode
+** Get the latest =org-mode= version
+   #+BEGIN_SRC emacs-lisp
+     (use-package org
+       :pin org
+       :ensure t)
+   #+END_SRC
+
+** Prettify code blocks
+   #+BEGIN_SRC emacs-lisp
+     (setq org-src-fontify-natively t)
+   #+END_SRC
+
+** Get pretty unicode bullets in =org-mode=
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+   #+END_SRC
+
+** =org-capture= stuff
+*** Keybindings
+    #+BEGIN_SRC emacs-lisp
+      (global-set-key (kbd "C-c c") 'org-capture)
+    #+END_SRC
+*** Agenda files
+    #+BEGIN_SRC emacs-lisp
+      (setq org-agenda-files (list "~/Dropbox/orgfiles/i.org"))
+    #+END_SRC
+*** Templates
+    #+BEGIN_SRC emacs-lisp
+      (setq org-capture-templates
+            '(("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Notes")
+               "* N - %?\n%T")
+              ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
+               "* %? %^L %^g \n%T" :prepend t)
+              ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Post Ideas")
+               "* %?\n%T" :prepend t)
+              ("p" "Project idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Project Ideas")
+               "* %?\n%T" :prepend t)
+              ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
+               "* %?\n%T" :prepend t)
+              ("B" "Books" entry (file+headline "~/Dropbox/orgfiles/i.org" "Books")
+               "* %?\n%T" :prepend t)
+              ("j" "Journal" entry (file+datetree "~/Dropbox/journal.org")
+               "* %?\nEntered on %U\n  %i\n  %a")))
+    #+END_SRC
+
+** Display inline images
+   #+BEGIN_SRC emacs-lisp
+     (setq org-startup-with-inline-images 1)
+   #+END_SRC
+
+* Helper functions
+** Toggle tabs
+   #+BEGIN_SRC emacs-lisp
+     (defun my/toggle-tabs ()
+       (interactive)
+       (setq-local indent-tabs-mode (not indent-tabs-mode)))
+   #+END_SRC
+
+* TODOS
+** [[https://github.com/abo-abo/org-download][org-download]]
+** [[http://emacsworld.blogspot.in/2008/12/generating-automatic-file-headers.html][Automatic file headers]] [[https://emacs.stackexchange.com/questions/11005/how-change-the-contents-of-a-package-header2-el][here]]
+** [[https://github.com/pashky/restclient.el][restclient]]
+** [[http://tkf.github.io/emacs-request/][request.el]]
+** [[https://github.com/remyhonig/elfeed-org][elfeed-org]]
+** [[https://notmuchmail.org/notmuch-emacs/][notmuch]]
+** Get better at projectile
+** Setup Emacs for PHP
+** Get current Spotify track
