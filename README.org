@@ -236,8 +236,8 @@
        :ensure t
        :bind
        (("M-y" . counsel-yank-pop)
-	:map ivy-minibuffer-map
-	("M-y" . ivy-next-line)))
+       :map ivy-minibuffer-map
+       ("M-y" . ivy-next-line)))
    #+END_SRC
 
 ** swiper
@@ -677,25 +677,17 @@
     #+END_SRC
 *** Agenda files
     #+BEGIN_SRC emacs-lisp
-      (setq org-agenda-files (list "~/Dropbox/orgfiles/i.org"))
+      (setq org-agenda-files (list "~/code/scratchpad.org"))
     #+END_SRC
 *** Templates
     #+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
-            '(("n" "Note" entry (file+headline "~/Dropbox/orgfiles/i.org" "Notes")
-               "* N - %?\n%T")
-              ("l" "Link" entry (file+headline "~/Dropbox/orgfiles/links.org" "Links")
-               "* %? %^L %^g \n%T" :prepend t)
-              ("b" "Blog idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Blog Post Ideas")
-               "* %?\n%T" :prepend t)
-              ("p" "Project idea" entry (file+headline "~/Dropbox/orgfiles/i.org" "Project Ideas")
-               "* %?\n%T" :prepend t)
-              ("t" "To Do Item" entry (file+headline "~/Dropbox/orgfiles/i.org" "To Do")
-               "* %?\n%T" :prepend t)
-              ("B" "Books" entry (file+headline "~/Dropbox/orgfiles/i.org" "Books")
-               "* %?\n%T" :prepend t)
-              ("j" "Journal" entry (file+datetree "~/Dropbox/journal.org")
-               "* %?\nEntered on %U\n  %i\n  %a")))
+	    '(("n" "Later" entry (file+headline "~/code/scratchpad.org" "Later")
+	       "* %?\n%T")
+	      ("l" "Link" entry (file+headline "~/code/links.org" "Links")
+	       "* %? %^L %^g \n%T" :prepend t)
+	      ("t" "To Do Item" entry (file+headline "~/code/scratchpad.org" "TODOS")
+	       "* %?\n%T" :prepend t)))
     #+END_SRC
 
 ** Display inline images
