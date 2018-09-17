@@ -356,12 +356,6 @@
    #+END_SRC
 
 ** Modeline
-*** Show battery percentage and time in the modeline
-    #+BEGIN_SRC emacs-lisp
-      ;; (display-battery-mode 1)
-      ;; (display-time-mode 1)
-    #+END_SRC
-
 *** smart-mode-line
    #+BEGIN_SRC emacs-lisp
      (use-package smart-mode-line
@@ -370,6 +364,12 @@
        (setq sml/theme 'respectful)
        (sml/setup))
    #+END_SRC
+
+*** Show battery percentage and time in the modeline
+    #+BEGIN_SRC emacs-lisp
+      (display-battery-mode 1)
+      (display-time-mode 1)
+    #+END_SRC
 
 *** Make the modeline look better
    #+BEGIN_SRC emacs-lisp
@@ -696,6 +696,17 @@
    #+END_SRC
 
 * Helper functions
+** Download Mysqli.class.php and place in cwd
+   I like to use this particular class to interact with databases with PHP.
+   #+BEGIN_SRC emacs-lisp
+     (defun esh/mysqlihere ()
+       "Download Mysqli.class.php and place in cwd. Meant to be used from eshell."
+       ; We'll need the URL library for the url-copy-file function
+       (require 'url)
+       (url-copy-file "https://raw.githubusercontent.com/ThingEngineer/PHP-MySQLi-Database-Class/master/MysqliDb.php" "MysqliDb.class.php")
+       (message "Done")
+     )
+   #+END_SRC
 ** Toggle tabs
    #+BEGIN_SRC emacs-lisp
      (defun my/toggle-tabs ()
