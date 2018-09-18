@@ -95,6 +95,16 @@
    #+BEGIN_SRC emacs-lisp
      (scroll-bar-mode 0)
    #+END_SRC
+
+** Disable the toolbar
+   #+BEGIN_SRC emacs-lisp
+     (tool-bar-mode 0)
+   #+END_SRC
+
+** Change the frame title
+   #+BEGIN_SRC emacs-lisp
+     (setq frame-title-format "emacs")
+   #+END_SRC
    
 ** Use y-or-n instead of yes-or-no
    #+BEGIN_SRC emacs-lisp
@@ -396,8 +406,10 @@
    #+BEGIN_SRC emacs-lisp
      (use-package exec-path-from-shell
        :ensure t
-       :config
-       (exec-path-from-shell-initialize))
+       :init
+       (exec-path-from-shell-initialize)
+       (when (memq window-system '(mac ns x))
+	 (exec-path-from-shell-initialize)))
    #+END_SRC
 
 ** Aliases
