@@ -126,6 +126,11 @@
      (winner-mode 1)
    #+END_SRC
 
+** Switch off indent tabs mode
+   #+BEGIN_SRC emacs-lisp
+     (setq-default indent-tabs-mode nil)
+   #+END_SRC
+
 * global-visual-line-mode
   Tell emacs to use visual-lines
   #+BEGIN_SRC emacs-lisp
@@ -349,20 +354,22 @@
      (set-face-attribute 'default t :font "Noto Mono for Powerline")
    #+END_SRC
 
+** Theme
+   #+BEGIN_SRC emacs-lisp
+     ;; (use-package nord-theme
+     ;;   :ensure t
+     ;;   :config
+     ;;   (if (display-graphic-p)
+     ;;       (load-theme 'nord)))
+     (if (display-graphic-p)
+	 (load-theme 'wombat))
+   #+END_SRC
+
 ** Fringe
    Change the color so that it doesn't look awkward.
    #+BEGIN_SRC emacs-lisp
      (if (display-graphic-p)
          (set-face-attribute 'fringe nil :background nil))
-   #+END_SRC
-
-** Theme
-   #+BEGIN_SRC emacs-lisp
-     (use-package nord-theme
-       :ensure t
-       :config
-       (if (display-graphic-p)
-	   (load-theme 'nord)))
    #+END_SRC
 
 ** Modeline
@@ -694,11 +701,11 @@
 *** Templates
     #+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
-	    '(("n" "Later" entry (file+headline "~/code/scratchpad.org" "Later")
+	    '(("n" "Later" entry (file+headline "~/life/scratchpad.org" "Later")
 	       "* %?\n%T")
-	      ("l" "Link" entry (file+headline "~/code/links.org" "Links")
+	      ("l" "Link" entry (file+headline "~/life/links.org" "Links")
 	       "* %? %^L %^g \n%T" :prepend t)
-	      ("t" "To Do Item" entry (file+headline "~/code/scratchpad.org" "TODOS")
+	      ("t" "Todo" entry (file+headline "~/life/scratchpad.org" "Uncategorised")
 	       "* %?\n%T" :prepend t)))
     #+END_SRC
 
