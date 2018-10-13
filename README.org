@@ -350,8 +350,8 @@
 ** Font
    Set font to Noto Mono.
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline" ))
-     (set-face-attribute 'default t :font "Noto Mono for Powerline")
+     ;; (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline" ))
+     ;; (set-face-attribute 'default t :font "Noto Mono for Powerline")
    #+END_SRC
 
 ** Theme
@@ -361,8 +361,13 @@
      ;;   :config
      ;;   (if (display-graphic-p)
      ;;       (load-theme 'nord)))
-     (if (display-graphic-p)
-	 (load-theme 'wombat))
+     ;; (if (display-graphic-p)
+     ;;     (load-theme 'wombat))
+     (use-package color-theme-sanityinc-tomorrow
+       :ensure t
+       :config
+       (if (display-graphic-p)
+           (load-theme 'sanityinc-tomorrow-bright)))
    #+END_SRC
 
 ** Fringe
