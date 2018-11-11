@@ -550,7 +550,7 @@
     #+END_SRC
 
 *** add-node-modules-path
-    Add local node_modules/.bin to exec-path. Use project-based installed of eg. eslint, prettier.
+    Add local node_modules/.bin to exec-path. Use project-based installation of eg. eslint, prettier.
     #+BEGIN_SRC emacs-lisp
       (use-package add-node-modules-path
         :ensure t
