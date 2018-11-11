@@ -356,18 +356,7 @@
 
 ** Theme
    #+BEGIN_SRC emacs-lisp
-     ;; (use-package nord-theme
-     ;;   :ensure t
-     ;;   :config
-     ;;   (if (display-graphic-p)
-     ;;       (load-theme 'nord)))
-     ;; (if (display-graphic-p)
-     ;;     (load-theme 'wombat))
-     (use-package color-theme-sanityinc-tomorrow
-       :ensure t
-       :config
-       (if (display-graphic-p)
-           (load-theme 'sanityinc-tomorrow-bright)))
+     (invert-face 'default)
    #+END_SRC
 
 ** Fringe
@@ -405,7 +394,7 @@
 
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
-     (setq-default cursor-type '(bar . 1))
+     (setq-default cursor-type '(bar . 2))
    #+END_SRC
 * eshell
 ** Bind a key to eshel
@@ -558,6 +547,27 @@
         (setq js-indent-level 2)
         (setq tab-width 2))
       (add-hook 'json-mode 'my/json-mode-hook)
+    #+END_SRC
+
+*** add-node-modules-path
+    Add local node_modules/.bin to exec-path. Use project-based installed of eg. eslint, prettier.
+    #+BEGIN_SRC emacs-lisp
+      (use-package add-node-modules-path
+        :ensure t
+        :config
+        (add-hook 'js2-mode 'add-node-modules-path))
+    #+END_SRC
+
+*** prettier-emacs
+    Prettier integration with emacs.
+    #+BEGIN_SRC emacs-lisp
+      (use-package prettier-js
+        :ensure t
+        :config
+        (add-hook 'js2-mode-hook 'prettier-js-mode)
+        ;; Bind a key
+        (add-hook 'js2-mode-hook
+                  '(lambda () (local-set-key "\C-c!f" 'prettier-js)))
     #+END_SRC
 ** web-mode
    Allows you to edit files that regular html-mode doesn't play nice with.
@@ -725,6 +735,7 @@
    #+BEGIN_SRC emacs-lisp
      (defun esh/mysqlihere ()
        "Download Mysqli.class.php and place in cwd. Meant to be used from eshell."
+       (interactive)
        ; We'll need the URL library for the url-copy-file function
        (require 'url)
        (url-copy-file "https://raw.githubusercontent.com/ThingEngineer/PHP-MySQLi-Database-Class/master/MysqliDb.php" "MysqliDb.class.php")
