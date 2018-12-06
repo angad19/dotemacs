@@ -17,18 +17,22 @@
        # Update and upgrade everything
        brew update
        brew upgrade
-       # Install emacs
-       brew install emacs --with-cocoa --with-gnutls --with-rsvg --with-imagemagick
+       # Install emacs-plus
+       brew tap d12frosted/emacs-plus
+       brew install emacs-plus --with-mailutils --with-modern-icon
      #+END_SRC
+
      Install on Debain-based distros - 
      #+BEGIN_SRC sh
        sudo apt install emacs
      #+END_SRC
+
   2. Clone this repo
      #+BEGIN_SRC sh
        mv ~/.emacs.d ~/.emacs.d.bak
        git clone https://github.com/angad19/dotemacs.git ~/.emacs.d
      #+END_SRC
+
   3. And you're done!
 
 * Set user details
@@ -347,16 +351,28 @@
    #+END_SRC
 
 * Aesthetics
-** Font
-   Set font to Noto Mono.
+** Titlebar
    #+BEGIN_SRC emacs-lisp
-     ;; (add-to-list 'default-frame-alist '(font . "Noto Mono for Powerline" ))
-     ;; (set-face-attribute 'default t :font "Noto Mono for Powerline")
+     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+     (add-to-list 'default-frame-alist '(ns-appearance . dark))
+   #+END_SRC
+
+** Set Font
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'default nil
+                         :family "Noto Mono for Powerline"
+                         :height 120
+                         :weight 'normal
+                         :width 'normal)
    #+END_SRC
 
 ** Theme
    #+BEGIN_SRC emacs-lisp
-     (invert-face 'default)
+     ;; (invert-face 'default)
+     (use-package dracula-theme
+       :ensure t
+       :config
+       (load-theme 'dracula))
    #+END_SRC
 
 ** Fringe
@@ -378,24 +394,15 @@
 
 *** Show battery percentage and time in the modeline
     #+BEGIN_SRC emacs-lisp
-      (display-battery-mode 1)
-      (display-time-mode 1)
+      (display-battery-mode 0)
+      (display-time-mode 0)
     #+END_SRC
-
-*** Make the modeline look better
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'mode-line nil
-			 :height 120
-			 :box '(:line-width 2 :color "#4C566A"))
-     (set-face-attribute 'mode-line-inactive nil
-			 :height 120
-			 :box '(:line-width 2 :color "#3B4252"))
-   #+END_SRC
 
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
      (setq-default cursor-type '(bar . 2))
    #+END_SRC
+
 * eshell
 ** Bind a key to eshel
    #+BEGIN_SRC emacs-lisp
@@ -409,8 +416,7 @@
        :ensure t
        :init
        (exec-path-from-shell-initialize)
-       (when (memq window-system '(mac ns x))
-	 (exec-path-from-shell-initialize)))
+       (exec-path-from-shell-copy-env "GOPATH"))
    #+END_SRC
 
 ** Aliases
@@ -441,14 +447,6 @@
       (setq company-idle-delay 0)
       (global-set-key (kbd "C-c /") 'company-files))
   #+END_SRC
-
-* Major modes
-** yaml-mode
-   Major mode for =YAML= files.
-   #+BEGIN_SRC emacs-lisp
-     (use-package yaml-mode
-       :ensure t)
-   #+END_SRC
 
 * Python
 ** Switch between python2 and python3
@@ -492,7 +490,26 @@
      (add-hook 'python-mode-hook 'my/python-mode-hook)
    #+END_SRC
 
+** Set sh-mode indentation
+   #+BEGIN_SRC emacs-lisp
+   (setq sh-basic-offset 2)
+   #+END_SRC
+
 * Web
+** textile-mode
+   I recently switched to textile from markdown to write my blog posts. This emacs package is a major mode for writing textile markup.
+   #+BEGIN_SRC emacs-lisp
+     (use-package textile-mode
+       :ensure t)
+   #+END_SRC
+
+** yaml-mode
+   Major mode for =YAML= files.
+   #+BEGIN_SRC emacs-lisp
+     (use-package yaml-mode
+       :ensure t)
+   #+END_SRC
+
 ** PHP
 *** php-mode
     Major mode for PHP.
@@ -506,6 +523,7 @@
         (setq tab-width 2)
         (setq c-basic-offset 2))
     #+END_SRC
+
 ** JavaScript
 *** js2-mode
     JavaScript major mode.
@@ -541,12 +559,8 @@
       (use-package json-mode
         :ensure t
         :config
-        (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode)))
-      (defun my/json-mode-hook()
-        (setq indent-tabs-mode nil)
-        (setq js-indent-level 2)
-        (setq tab-width 2))
-      (add-hook 'json-mode 'my/json-mode-hook)
+        (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+        (setq js-indent-level 2))
     #+END_SRC
 
 *** add-node-modules-path
@@ -567,8 +581,9 @@
         (add-hook 'js2-mode-hook 'prettier-js-mode)
         ;; Bind a key
         (add-hook 'js2-mode-hook
-                  '(lambda () (local-set-key "\C-c!f" 'prettier-js)))
+                  '(lambda () (local-set-key "\C-c!f" 'prettier-js))))
     #+END_SRC
+
 ** web-mode
    Allows you to edit files that regular html-mode doesn't play nice with.
    #+BEGIN_SRC emacs-lisp
@@ -583,13 +598,13 @@
        (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
-       (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+       ;; (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
        (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
      (defun my-web-mode-hook ()
        "Hooks for Web mode."
        (setq web-mode-markup-indent-offset 2)
        (setq web-mode-css-indent-offset 2)
-       (setq web-mode-code-indent-offeset 2)
+       (setq web-mode-code-indent-offset 2)
        (setq indent-tabs-mode t))
      (add-hook 'web-mode-hook  'my-web-mode-hook)
    #+END_SRC
@@ -628,6 +643,50 @@
    #+BEGIN_SRC emacs-lisp
      (use-package restclient
        :ensure t)
+   #+END_SRC
+
+** CSS Eldoc
+   #+BEGIN_SRC emacs-lisp
+     (use-package css-eldoc
+       :ensure t
+       :config
+       (add-hook 'css-mode '(lambda ()
+                              (eldoc-mode)
+                              (css-eldoc-enable))))
+   #+END_SRC
+
+* GO
+** go-mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package go-mode
+       :ensure t)
+   #+END_SRC
+
+** company-go
+   #+BEGIN_SRC emacs-lisp
+     (use-package company-go
+       :ensure t)
+   #+END_SRC
+
+** go-eldoc
+   #+BEGIN_SRC emacs-lisp
+     (use-package go-eldoc
+       :ensure t
+       :config
+       (add-hook 'go-mode-hook 'go-eldoc-setup))
+   #+END_SRC
+
+** Get everything together
+   #+BEGIN_SRC emacs-lisp
+     (defun my-go-mode-hook ()
+           (setq tab-width 2 indent-tabs-mode 1)
+           (add-hook 'before-save-hook 'gofmt-before-save))
+     (add-hook 'go-mode-hook 'my-go-mode-hook)
+
+     ;; autocompletion
+     (add-hook 'go-mode-hook (lambda ()
+                               (company-mode)
+                               (set (make-local-variable 'company-backends) '(company-go))))
    #+END_SRC
 
 * elfeed
