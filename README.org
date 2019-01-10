@@ -1,4 +1,4 @@
-#+TITLE: Angad Singh's Emacs Config
++TITLE: Angad Singh's Emacs Config
 #+AUTHOR: Angad Singh
 #+OPTIONS: TOC:NIL
 
@@ -135,11 +135,11 @@
      (setq-default indent-tabs-mode nil)
    #+END_SRC
 
-* global-visual-line-mode
-  Tell emacs to use visual-lines
-  #+BEGIN_SRC emacs-lisp
-    (global-visual-line-mode 1)
-  #+END_SRC
+** global-visual-line-mode
+   Tell emacs to use visual-lines
+   #+BEGIN_SRC emacs-lisp
+     (global-visual-line-mode 1)
+   #+END_SRC
 
 ** Don't use tabs
    #+BEGIN_SRC emacs-lisp
@@ -157,6 +157,25 @@
    #+BEGIN_SRC emacs-lisp
      (use-package try
        :ensure t)
+   #+END_SRC
+** simpleclip
+   Keep system clipboard and emacs kill ring separate.
+   #+BEGIN_SRC emacs-lisp
+     (use-package simpleclip
+       :ensure t
+       :config
+       (simpleclip-mode))
+   #+END_SRC
+
+** dimmer
+   Dim inactive windows
+   #+BEGIN_SRC emacs-lisp
+     (use-package dimmer
+       :ensure t
+       :config
+       (setq dimmer-fraction 0.5)
+       (setq dimmer-exclusion-regexp "^\*helm.*\\|^ \*Minibuf-.*\\|^ \*Echo.*")
+       (dimmer-mode))
    #+END_SRC
 
 ** which-key
@@ -359,21 +378,30 @@
 
 ** Set Font
    #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'default nil
-                         :family "Noto Mono for Powerline"
-                         :height 120
-                         :weight 'normal
-                         :width 'normal)
+     (defun my/set-font ()
+       "Set the font"
+       (interactive)
+       (add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline" ))
+       (set-face-attribute 'default nil
+                           :family "Fira Mono for Powerline"
+                           :height 130
+                           :weight 'normal
+                           :width 'normal))
+     (my/set-font)
    #+END_SRC
 
 ** Theme
-   #+BEGIN_SRC emacs-lisp
-     ;; (invert-face 'default)
-     (use-package dracula-theme
-       :ensure t
-       :config
-       (load-theme 'dracula))
-   #+END_SRC
+*** Themes I like
+    + [[https://github.com/dawidof/emacs-monokai-theme][monokai-alt]]
+    + [[https://github.com/jordonbiondo/ample-theme][ample]]
+    + [[https://github.com/dakrone/dakrone-theme][dakrone]]
+    + [[https://github.com/startling/firebelly][firebelly]]
+    #+BEGIN_SRC emacs-lisp
+      (use-package dakrone-theme
+        :ensure t
+        :config
+        (load-theme 'dakrone))
+    #+END_SRC
 
 ** Fringe
    Change the color so that it doesn't look awkward.
@@ -388,6 +416,7 @@
      (use-package smart-mode-line
        :ensure t
        :config
+       (setq sml/no-confirm-load-theme t)
        (setq sml/theme 'respectful)
        (sml/setup))
    #+END_SRC
@@ -401,6 +430,8 @@
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
      (setq-default cursor-type '(bar . 2))
+     (blink-cursor-mode nil)
+     (set-face-attribute 'cursor nil :background "#2977F5")
    #+END_SRC
 
 * eshell
@@ -550,7 +581,8 @@
         :ensure t
         :config
         (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
-        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode)))
+        (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+        (define-key js2-mode-map [C-x x] 'rjsx-mode))
     #+END_SRC
 
 *** JSON mode
@@ -578,6 +610,9 @@
       (use-package prettier-js
         :ensure t
         :config
+        (setq prettier-js-args '(
+                                 "--no-semi" "true"
+                                 ))
         (add-hook 'js2-mode-hook 'prettier-js-mode)
         ;; Bind a key
         (add-hook 'js2-mode-hook
@@ -655,7 +690,7 @@
                               (css-eldoc-enable))))
    #+END_SRC
 
-* GO
+* Golang
 ** go-mode
    #+BEGIN_SRC emacs-lisp
      (use-package go-mode
@@ -679,14 +714,11 @@
 ** Get everything together
    #+BEGIN_SRC emacs-lisp
      (defun my-go-mode-hook ()
-           (setq tab-width 2 indent-tabs-mode 1)
-           (add-hook 'before-save-hook 'gofmt-before-save))
+       (company-mode)
+       (set (make-local-variable 'company-backends) '(company-go))
+       (setq tab-width 2 indent-tabs-mode 1)
+       (add-hook 'before-save-hook 'gofmt-before-save))
      (add-hook 'go-mode-hook 'my-go-mode-hook)
-
-     ;; autocompletion
-     (add-hook 'go-mode-hook (lambda ()
-                               (company-mode)
-                               (set (make-local-variable 'company-backends) '(company-go))))
    #+END_SRC
 
 * elfeed
