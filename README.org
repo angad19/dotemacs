@@ -1,4 +1,4 @@
-+TITLE: Angad Singh's Emacs Config
+#+TITLE: Angad Singh's Emacs Config
 #+AUTHOR: Angad Singh
 #+OPTIONS: TOC:NIL
 
@@ -78,10 +78,17 @@
 ** Startup changes
    Remove the startup message and change the message in the scratch buffer.
    #+BEGIN_SRC emacs-lisp
-     (setq start-message ";; angad")
+     (setq start-message ";; dotangad")
      (setq inhibit-startup-message t)
      (setq initial-scratch-message start-message)
      (setq inhibit-startup-echo-area-message start-message)
+   #+END_SRC
+
+** Use Emoji Font for Emojis
+   #+BEGIN_SRC emacs-lisp
+     (set-fontset-font t 'symbol 
+                       (font-spec :family "Apple Color Emoji") 
+                       nil 'prepend)
    #+END_SRC
 
 ** Replace =list-buffers= with =ibuffer=
@@ -105,9 +112,9 @@
      (tool-bar-mode 0)
    #+END_SRC
 
-** Change the frame title
+** Set sh-mode indentation
    #+BEGIN_SRC emacs-lisp
-     (setq frame-title-format "emacs")
+   (setq sh-basic-offset 2)
    #+END_SRC
    
 ** Use y-or-n instead of yes-or-no
@@ -130,11 +137,6 @@
      (winner-mode 1)
    #+END_SRC
 
-** Switch off indent tabs mode
-   #+BEGIN_SRC emacs-lisp
-     (setq-default indent-tabs-mode nil)
-   #+END_SRC
-
 ** global-visual-line-mode
    Tell emacs to use visual-lines
    #+BEGIN_SRC emacs-lisp
@@ -143,8 +145,8 @@
 
 ** Don't use tabs
    #+BEGIN_SRC emacs-lisp
-     (setq indent-tabs-mode nil)
-     (setq tab-width 2)
+     (setq-default indent-tabs-mode nil)
+     (setq-default tab-width 2)
      (setq c-basic-offset 2)
      (setq cperl-indent-level 2)
      (setq js2-basic-offset 2)
@@ -173,7 +175,7 @@
      (use-package dimmer
        :ensure t
        :config
-       (setq dimmer-fraction 0.5)
+       (setq dimmer-fraction 0.2)
        (setq dimmer-exclusion-regexp "^\*helm.*\\|^ \*Minibuf-.*\\|^ \*Echo.*")
        (dimmer-mode))
    #+END_SRC
@@ -191,7 +193,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package ace-window
        :ensure t
-       :bind ("C-x o" . ace-window))
+       :bind ("C-x C-a" . ace-window))
    #+END_SRC
 
 ** expand-region
@@ -217,13 +219,6 @@
        :ensure t)
    #+END_SRC
 
-** ranger
-   A file manager inside emacs. Based on dired and ranger.
-   #+BEGIN_SRC emacs-lisp
-     (use-package ranger
-       :ensure t)
-   #+END_SRC
-
 ** smartparens
    Deal with delimiters better.
    #+BEGIN_SRC emacs-lisp
@@ -234,6 +229,19 @@
        (add-hook 'prog-mode-hook (lambda () (smartparens-mode))))
    #+END_SRC
 
+** hl-todo
+   Highlight TODO and similar keywords in comments and strings.
+   #+BEGIN_SRC emacs-lisp
+     (use-package hl-todo
+       :ensure t
+       :config
+       (progn
+         (global-set-key (kbd "C-c p") 'hl-todo-previous)
+         (global-set-key (kbd "C-c n") 'hl-todo-next)
+         (global-set-key (kbd "C-c o") 'hl-todo-occur)
+         (add-hook 'prog-mode-hook hl-todo-mode)))
+   #+END_SRC
+
 * Flycheck
   On-the-fly syntax checking.
   #+BEGIN_SRC emacs-lisp
@@ -241,6 +249,11 @@
       :ensure t
       :config
       (global-flycheck-mode))
+  #+END_SRC
+  Enable flyspell, on-the-fly spell checking.
+  #+BEGIN_SRC emacs-lisp
+    (setq ispell-program-name "/usr/local/bin/aspell")
+    (add-hook 'text-mode-hook flyspell-mode)
   #+END_SRC
 
 * Projectile
@@ -374,6 +387,7 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
      (add-to-list 'default-frame-alist '(ns-appearance . dark))
+     (setq frame-title-format "emacs@macbook")
    #+END_SRC
 
 ** Set Font
@@ -397,17 +411,17 @@
     + [[https://github.com/dakrone/dakrone-theme][dakrone]]
     + [[https://github.com/startling/firebelly][firebelly]]
     #+BEGIN_SRC emacs-lisp
-      (use-package dakrone-theme
-        :ensure t
-        :config
-        (load-theme 'dakrone))
+      (invert-face 'default)
     #+END_SRC
 
 ** Fringe
    Change the color so that it doesn't look awkward.
    #+BEGIN_SRC emacs-lisp
-     (if (display-graphic-p)
-         (set-face-attribute 'fringe nil :background nil))
+     (defun my/fix-fringe ()
+       (interactive)
+       (if (display-graphic-p)
+           (set-face-attribute 'fringe nil :background nil)))
+     (my/fix-fringe)
    #+END_SRC
 
 ** Modeline
@@ -421,21 +435,15 @@
        (sml/setup))
    #+END_SRC
 
-*** Show battery percentage and time in the modeline
-    #+BEGIN_SRC emacs-lisp
-      (display-battery-mode 0)
-      (display-time-mode 0)
-    #+END_SRC
-
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
-     (setq-default cursor-type '(bar . 2))
+     (setq-default cursor-type '(bar . 1))
      (blink-cursor-mode nil)
-     (set-face-attribute 'cursor nil :background "#2977F5")
+     (set-face-attribute 'cursor nil :background "#2977f5")
    #+END_SRC
 
 * eshell
-** Bind a key to eshel
+** Bind a key to eshell
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "M-s e") 'eshell)
    #+END_SRC
@@ -458,11 +466,6 @@
 
 ** Prompt
    #+BEGIN_SRC emacs-lisp
-     ;; (setq eshell-prompt-function
-     ;;   (lambda nil
-     ;;     (concat
-     ;;      (eshell/pwd)
-     ;;      " $ ")))
      (use-package eshell-git-prompt
        :ensure t
        :config (eshell-git-prompt-use-theme 'robbyrussell))
@@ -521,11 +524,6 @@
      (add-hook 'python-mode-hook 'my/python-mode-hook)
    #+END_SRC
 
-** Set sh-mode indentation
-   #+BEGIN_SRC emacs-lisp
-   (setq sh-basic-offset 2)
-   #+END_SRC
-
 * Web
 ** textile-mode
    I recently switched to textile from markdown to write my blog posts. This emacs package is a major mode for writing textile markup.
@@ -582,7 +580,8 @@
         :config
         (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
         (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
-        (define-key js2-mode-map [C-x x] 'rjsx-mode))
+        (define-key js2-mode-map [C-x x] 'rjsx-mode)
+        (add-hook 'rjsx-mode-hook 'emmet-mode))
     #+END_SRC
 
 *** JSON mode
@@ -713,12 +712,33 @@
 
 ** Get everything together
    #+BEGIN_SRC emacs-lisp
-     (defun my-go-mode-hook ()
-       (company-mode)
-       (set (make-local-variable 'company-backends) '(company-go))
-       (setq tab-width 2 indent-tabs-mode 1)
-       (add-hook 'before-save-hook 'gofmt-before-save))
-     (add-hook 'go-mode-hook 'my-go-mode-hook)
+     (add-hook 'go-mode-hook
+               (lambda ()
+                 (setq indent-tabs-mode 1)
+                 (setq tab-width 2)
+                 ;; company mode setup
+                 (company-mode)
+                 (setq company-backends '(company-go))
+                 ;; Customize compile command to run go build
+                 (if (not (string-match "go" compile-command))
+                     (set (make-local-variable 'compile-command)
+                          "go build"))
+                 ;; Go oracle
+                 (load-file "$GOPATH/src/golang.org/x/tools/cmd/oracle/oracle.el")
+                 ;; Go fmt before save
+                 (setq gofmt-command "goimports")
+                 (add-hook 'before-save-hook 'gofmt-before-save)))
+
+     ;; Use spaces in all other modes
+     (add-hook 'prog-mode-hook
+               (lambda ()
+                 (unless (derived-mode-p 'go-mode)
+                   (setq indent-tabs-mode nil)
+                   (setq tab-size 2))))
+     (add-hook 'text-mode-hook
+               (lambda ()
+                 (setq indent-tabs-mode nil)
+                 (setq tab-size 2)))
    #+END_SRC
 
 * elfeed
@@ -850,3 +870,4 @@
 ** Get better at projectile
 ** Setup Emacs for PHP
 ** Get current Spotify track
+** =use-theme= macro
