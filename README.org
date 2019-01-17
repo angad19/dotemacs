@@ -145,7 +145,7 @@
 
 ** Don't use tabs
    #+BEGIN_SRC emacs-lisp
-     (setq-default indent-tabs-mode nil)
+     (setq-default indent-tabs-mode 0)
      (setq-default tab-width 2)
      (setq c-basic-offset 2)
      (setq cperl-indent-level 2)
@@ -438,7 +438,7 @@
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
      (setq-default cursor-type '(bar . 1))
-     (blink-cursor-mode nil)
+     (blink-cursor-mode 0)
      (set-face-attribute 'cursor nil :background "#2977f5")
    #+END_SRC
 
