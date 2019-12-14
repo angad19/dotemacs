@@ -136,6 +136,7 @@
      (use-package try
        :ensure t)
    #+END_SRC
+   
 ** simpleclip
    Keep system clipboard and emacs kill ring separate.
    #+BEGIN_SRC emacs-lisp
@@ -217,6 +218,34 @@
          (global-set-key (kbd "C-c o") 'hl-todo-occur)
          (add-hook 'prog-mode-hook hl-todo-mode)))
    #+END_SRC
+
+* Evil mode
+  #+BEGIN_SRC emacs-lisp
+    ;; Install key-chord
+    (use-package key-chord
+      :ensure t)
+
+    ;; Install evil mode
+    (use-package evil
+      :ensure t
+      :requires (key-chord)
+      :config
+      (progn
+        (evil-mode 1)
+        ;; Enable emacs keys in insert mode
+        (setcdr evil-insert-state-map nil)
+        ;; Map jk to <esc>
+        (setq key-chord-two-keys-delay 0.5)
+        (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+        (key-chord-mode 1)))
+
+    ;; surround.vim
+    (use-package evil-surround
+      :ensure t
+      :requires (evil)
+      :config
+      (global-evil-surround-mode 1))
+  #+END_SRC
 
 * Flycheck
   On-the-fly syntax checking.
@@ -363,7 +392,7 @@
        (add-to-list 'default-frame-alist '(font . "Ubuntu Mono derivative Powerline" ))
        (set-face-attribute 'default nil
                            :family "Ubuntu Mono derivative Powerline"
-                           :height 160
+                           :height 150
                            :weight 'normal
                            :width 'normal))
      (my/set-font)
@@ -379,18 +408,18 @@
       (use-package cyberpunk-theme
         :ensure t
         :config
-        (load-theme 'cyberpunk))
+        (load-theme 'cyberpunk t))
     #+END_SRC
 
 ** Modeline
-*** smart-mode-line
+*** doom-modeline and all-the-icons 
    #+BEGIN_SRC emacs-lisp
-     (use-package smart-mode-line
-       :ensure t
-       :config
-       (setq sml/no-confirm-load-theme t)
-       (setq sml/theme 'respectful)
-       (sml/setup))
+     (use-package all-the-icons
+       :ensure t)
+
+     (use-package doom-modeline
+           :ensure t
+           :hook (after-init . doom-modeline-mode))
    #+END_SRC
 
 ** Fringe
@@ -569,9 +598,8 @@
                                  "--no-semi" "true"
                                  ))
         (add-hook 'js2-mode-hook 'prettier-js-mode)
-        ;; Bind a key
-        (add-hook 'js2-mode-hook
-                  '(lambda () (local-set-key "\C-c!f" 'prettier-js))))
+        (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+        (add-hook 'web-mode-hook 'prettier-js-mode))
     #+END_SRC
 
 ** web-mode

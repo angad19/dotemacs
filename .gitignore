@@ -1,4 +1,5 @@
 config.el
+transient
 README.el
 bookmarks
 .DS_Store
