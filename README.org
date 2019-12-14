@@ -3,7 +3,7 @@
 #+OPTIONS: TOC:NIL
 
 * About
-  I'm Angad Singh, a high school student from New Delhi, India. I mostly use Emacs for writing code and taking notes with =org-mode=. I'm a member of [[http://dpsrkp.net][Delhi Public School, R.K. Puram's]] computer club, [[http://exunclan.com][Exun Clan]] where I work with the quizzing and web development departments. This mostly involves PHP on the backend and a lot of frontend JavaScript. I also write a lot of JavaScript on the backend for side projects and (sometimes) paid jobs. I like to hack around with stuff that I might get to work with in the future, this includes languages like Python and Go. This config is highly inspired by Mike Zamansky's [[http://cestlaz.github.io/stories/emacs/][Using Emacs]] series. I've tried to read documentation for and understand everything in this file, in case you see my elisp-fu falter feel free to submit an issue on this repo and tell me about it.
+  I'm Angad Singh, a high school student from New Delhi, India. I mostly use Emacs for writing code and taking notes with =org-mode=. I'm a member of [[http://dpsrkp.net][Delhi Public School, R.K. Puram's]] computer club, [[http://exunclan.com][Exun Clan]] where I work with the quizzing and web development departments. This mostly involves PHP on the backend and a lot of frontend JavaScript. I also write a lot of JavaScript on the backend with frameworks like Express and Koa. I like to hack around with stuff that I might get to work with in the future, this includes languages like Python and Go. This config is highly inspired by Mike Zamansky's [[http://cestlaz.github.io/stories/emacs/][Using Emacs]] series. I've tried to read documentation for and understand everything in this file, in case you see my elisp-fu falter feel free to submit an issue on this repo and tell me about it.
 
 * Installation
   1. Make sure you have emacs installed.
@@ -32,7 +32,7 @@
   2. Clone this repo
      #+BEGIN_SRC sh
        mv ~/.emacs.d ~/.emacs.d.bak
-       git clone https://github.com/angad19/dotemacs.git ~/.emacs.d
+       git clone https://github.com/dotangad/dotemacs.git ~/.emacs.d
      #+END_SRC
 
   3. And you're done!
@@ -41,7 +41,7 @@
   Set =user-full-name= and =user-mail-address=.
   #+BEGIN_SRC emacs-lisp
     (setq user-full-name "Angad Singh")
-    (setq user-mail-address "angadsingh567890@gmail.com")
+    (setq user-mail-address "mail@angad.dev")
   #+END_SRC
 
 * Package management
@@ -77,83 +77,57 @@
    #+END_SRC
 
 * Interface changes
-** Startup changes
-   Remove the startup message and change the message in the scratch buffer.
-   #+BEGIN_SRC emacs-lisp
-     (setq start-message ";; dotangad")
-     (setq inhibit-startup-message t)
-     (setq initial-scratch-message start-message)
-     (setq inhibit-startup-echo-area-message start-message)
-   #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    ;; Remove the startup message and change the message in the scratch buffer.
+    (setq start-message ";; dotangad")
+    (setq inhibit-startup-message t)
+    (setq initial-scratch-message start-message)
+    (setq inhibit-startup-echo-area-message start-message)
 
-** Use Emoji Font for Emojis
-   #+BEGIN_SRC emacs-lisp
-     (set-fontset-font t 'symbol 
-                       (font-spec :family "Apple Color Emoji") 
-                       nil 'prepend)
-   #+END_SRC
+    ;; Use Emoji Font for Emojis
+    (set-fontset-font t 'symbol 
+                      (font-spec :family "Apple Color Emoji") 
+                      nil 'prepend)
 
-** Replace =list-buffers= with =ibuffer=
-   #+BEGIN_SRC emacs-lisp
-     (defalias 'list-buffers 'ibuffer)
-   #+END_SRC
+    ;; Replace list-buffers with ibuffer
+    (defalias 'list-buffers 'ibuffer)
 
-** Line numbers
-   #+BEGIN_SRC emacs-lisp
-     (setq linum-format "%4d ")
-     (add-hook 'prog-mode-hook (lambda () (linum-mode 1)))
-   #+END_SRC
+    ;; Line numbers
+    (setq linum-format "%4d ")
+    (add-hook 'prog-mode-hook (lambda () (linum-mode 1)))
 
-** Disable the scrollbar
-   #+BEGIN_SRC emacs-lisp
-     (scroll-bar-mode 0)
-   #+END_SRC
+    ;; Disable scrollbar and toolbar
+    (scroll-bar-mode 0)
+    (tool-bar-mode 0)
 
-** Disable the toolbar
-   #+BEGIN_SRC emacs-lisp
-     (tool-bar-mode 0)
-   #+END_SRC
+    ;; Use y-or-n instead of yes-or-no
+    (fset 'yes-or-no-p 'y-or-n-p)
 
-** Set sh-mode indentation
-   #+BEGIN_SRC emacs-lisp
-   (setq sh-basic-offset 2)
-   #+END_SRC
-   
-** Use y-or-n instead of yes-or-no
-   #+BEGIN_SRC emacs-lisp
-     (fset 'yes-or-no-p 'y-or-n-p)
-   #+END_SRC
+    ;; Show matching parens
+    (show-paren-mode 1)
 
-** Show matching parens
-   #+BEGIN_SRC emacs-lisp
-     (show-paren-mode 1)
-   #+END_SRC
+    ;; Automatically revert buffer on changes
+    (global-auto-revert-mode t)
 
-** Automatically revert buffer on changes
-   #+BEGIN_SRC emacs-lisp
-     (global-auto-revert-mode t)
-   #+END_SRC
+    ;; Record changes in the window configuration
+    (winner-mode 1)
 
-** Record changes in the window configuration
-   #+BEGIN_SRC emacs-lisp
-     (winner-mode 1)
-   #+END_SRC
+    ;; Tell emacs to use visual-lines
+    (global-visual-line-mode 1)
 
-** global-visual-line-mode
-   Tell emacs to use visual-lines
-   #+BEGIN_SRC emacs-lisp
-     (global-visual-line-mode 1)
-   #+END_SRC
+    ;; Tabs are evil
+    (setq-default indent-tabs-mode 0)
+    (setq-default tab-width 2)
+    (setq c-basic-offset 2)
+    (setq cperl-indent-level 2)
+    (setq js2-basic-offset 2)
+    (setq css-indent-offset 2)
+    (setq sh-basic-offset 2)
 
-** Don't use tabs
-   #+BEGIN_SRC emacs-lisp
-     (setq-default indent-tabs-mode 0)
-     (setq-default tab-width 2)
-     (setq c-basic-offset 2)
-     (setq cperl-indent-level 2)
-     (setq js2-basic-offset 2)
-     (setq css-indent-offset 2)
-   #+END_SRC
+    ;; Backup files: don't create them
+    (setq make-backup-files nil)
+    (setq auto-save-default nil)
+  #+END_SRC
 
 * Miscellaneous packages
 ** try
@@ -322,17 +296,6 @@
       ("C-x p" . magit-push-to-remote))
   #+END_SRC
 
-* Backup files
-** Don't create =backup~= files.
-   #+BEGIN_SRC emacs-lisp
-     (setq make-backup-files nil)
-   #+END_SRC
-
-** Don't create =#autosave#= files.
-   #+BEGIN_SRC emacs-lisp
-     (setq auto-save-default nil)
-   #+END_SRC
-
 * Custom minor-modes
 ** =my/hidden-mode-line-mode=
    Minor mode to hide the modeline in the buffer.
@@ -374,7 +337,7 @@
        :global t
        :variable my/big-fringe-mode
        :group 'editing-basics
-       (if (not bzg-big-fringe-mode)
+       (if (not my/big-fringe-mode)
            (set-fringe-style nil)
          (set-fringe-mode
           (/ (- (frame-pixel-width)
@@ -397,10 +360,10 @@
      (defun my/set-font ()
        "Set the font"
        (interactive)
-       (add-to-list 'default-frame-alist '(font . "Fira Mono for Powerline" ))
+       (add-to-list 'default-frame-alist '(font . "Ubuntu Mono derivative Powerline" ))
        (set-face-attribute 'default nil
-                           :family "Fira Mono for Powerline"
-                           :height 130
+                           :family "Ubuntu Mono derivative Powerline"
+                           :height 160
                            :weight 'normal
                            :width 'normal))
      (my/set-font)
@@ -413,18 +376,11 @@
     + [[https://github.com/dakrone/dakrone-theme][dakrone]]
     + [[https://github.com/startling/firebelly][firebelly]]
     #+BEGIN_SRC emacs-lisp
-      (invert-face 'default)
+      (use-package cyberpunk-theme
+        :ensure t
+        :config
+        (load-theme 'cyberpunk))
     #+END_SRC
-
-** Fringe
-   Change the color so that it doesn't look awkward.
-   #+BEGIN_SRC emacs-lisp
-     (defun my/fix-fringe ()
-       (interactive)
-       (if (display-graphic-p)
-           (set-face-attribute 'fringe nil :background nil)))
-     (my/fix-fringe)
-   #+END_SRC
 
 ** Modeline
 *** smart-mode-line
@@ -437,9 +393,19 @@
        (sml/setup))
    #+END_SRC
 
+** Fringe
+   Change the color so that it doesn't look awkward.
+   #+BEGIN_SRC emacs-lisp
+     (defun my/fix-fringe ()
+       (interactive)
+       (if (display-graphic-p)
+           (set-face-attribute 'fringe nil :background "black")))
+     (my/fix-fringe)
+   #+END_SRC
+
 ** Change cursor
    #+BEGIN_SRC emacs-lisp
-     (setq-default cursor-type '(bar . 1))
+     (setq-default cursor-type '(bar . 2))
      (blink-cursor-mode 0)
      (set-face-attribute 'cursor nil :background "#2977f5")
    #+END_SRC
@@ -470,7 +436,7 @@
    #+BEGIN_SRC emacs-lisp
      (use-package eshell-git-prompt
        :ensure t
-       :config (eshell-git-prompt-use-theme 'robbyrussell))
+       :config (eshell-git-prompt-use-theme 'default))
    #+END_SRC
 
 * Code completion
@@ -485,23 +451,11 @@
   #+END_SRC
 
 * Python
-** Switch between python2 and python3
+** Set python3 as the default interpreter
    #+BEGIN_SRC emacs-lisp
-     (defun my/set-py3 ()
-       "Set python3 as the python shell interpreter and default python command."
-       (interactive)
-       (setq py-python-command "python3")
-       (setq python-shell-interpreter "python3")
-       (message "Interpreter changed to python3"))
-
-     (defun my/set-py2 ()
-       "Set python2 as the python shell interpreter and default python command."
-       (interactive)
-       (setq py-python-command "python")
-       (setq python-shell-interpreter "python")
-       (message "Interpreter changed to python2"))
-
-     (my/set-py3)
+   ;; Set python3 as the python shell interpreter and default python command.
+   (setq py-python-command "python3")
+   (setq python-shell-interpreter "python3")
    #+END_SRC
 
 ** company-jedi
@@ -743,59 +697,6 @@
                  (setq tab-size 2)))
    #+END_SRC
 
-* elfeed
-  An RSS client for emacs.
-  #+BEGIN_SRC emacs-lisp
-    (use-package elfeed
-      :ensure t
-      :bind (:map elfeed-search-mode-map
-                  ("q" . bjm/elfeed-save-db-and-bury)))
-    (global-set-key (kbd "C-x w") 'bjm/elfeed-load-db-and-open)
-  #+END_SRC
-
-** Set elfeed feeds
-   #+BEGIN_SRC emacs-lisp
-     (setq elfeed-feeds
-           '(("http://nullprogram.com/feed/" emacs cs linux)
-             ("https://xkcd.com/rss.xml" webcomics)
-             ("http://angad19.github.io/blog/feed.xml" emacs cs)
-             ("http://cestlaz.github.io/rss.xml" emacs education cs)
-             ("http://pragmaticemacs.com/feed/" emacs)
-             ("http://sachachua.com/blog/feed/" emacs)
-             ("https://mdk.fr/feeds/all.atom.xml" emacs cs python)
-             ("http://emacsblog.org/feed/" emacs)
-             ("https://kieranhealy.org/index.xml" emacs sociology)
-             ("https://www.classandobjects.com/index.xml" rails react vue)))
-   #+END_SRC
-
-** elfeed-goodies
-   Make elfeed nicer.
-   #+BEGIN_SRC emacs-lisp
-     (use-package elfeed-goodies
-       :ensure t
-       :config (elfeed-goodies/setup))
-   #+END_SRC
-
-** elfeed-helper-functions
-   Functions to support .elfeed between machines. [[http://pragmaticemacs.com/emacs/read-your-rss-feeds-in-emacs-with-elfeed/][Here]].
-*** Makes sure elfeed reads index from disk before launching.
-    #+BEGIN_SRC emacs-lisp
-      (defun bjm/elfeed-load-db-and-open ()
-        "Wrapper to load the elfeed db from disk before opening"
-        (interactive)
-        (elfeed-db-load)
-        (elfeed)
-        (elfeed-search-update--force))
-    #+END_SRC
-*** Write to disk when quiting.
-    #+BEGIN_SRC emacs-lisp
-      (defun bjm/elfeed-save-db-and-bury ()
-        "Wrapper to save the elfeed db to disk before burying buffer"
-        (interactive)
-        (elfeed-db-save)
-        (quit-window))
-    #+END_SRC
-
 * org-mode
 ** Get the latest =org-mode= version
    #+BEGIN_SRC emacs-lisp
@@ -814,7 +715,7 @@
      (use-package org-bullets
        :ensure t
        :config
-       (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+       (add-hook 'org-mode-hook 'org-bullets-mode))
    #+END_SRC
 
 ** =org-capture= stuff
@@ -822,18 +723,18 @@
     #+BEGIN_SRC emacs-lisp
       (global-set-key (kbd "C-c c") 'org-capture)
     #+END_SRC
+
 *** Agenda files
     #+BEGIN_SRC emacs-lisp
       (setq org-agenda-files (list "~/code/scratchpad.org"))
     #+END_SRC
+
 *** Templates
     #+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
-	    '(("n" "Later" entry (file+headline "~/life/scratchpad.org" "Later")
+	    '(("n" "Note" entry (file+headline "~/life/scratchpad.org" "Note")
 	       "* %?\n%T")
-	      ("l" "Link" entry (file+headline "~/life/links.org" "Links")
-	       "* %? %^L %^g \n%T" :prepend t)
-	      ("t" "Todo" entry (file+headline "~/life/scratchpad.org" "Uncategorised")
+	      ("t" "Exun" entry (file+headline "~/life/scratchpad.org" "Exun")
 	       "* %?\n%T" :prepend t)))
     #+END_SRC
 
@@ -842,34 +743,8 @@
      (setq org-startup-with-inline-images 1)
    #+END_SRC
 
-* Helper functions
-** Download Mysqli.class.php and place in cwd
-   I like to use this particular class to interact with databases with PHP.
-   #+BEGIN_SRC emacs-lisp
-     (defun esh/mysqlihere ()
-       "Download Mysqli.class.php and place in cwd. Meant to be used from eshell."
-       (interactive)
-       ; We'll need the URL library for the url-copy-file function
-       (require 'url)
-       (url-copy-file "https://raw.githubusercontent.com/ThingEngineer/PHP-MySQLi-Database-Class/master/MysqliDb.php" "MysqliDb.class.php")
-       (message "Done")
-     )
-   #+END_SRC
-** Toggle tabs
-   #+BEGIN_SRC emacs-lisp
-     (defun my/toggle-tabs ()
-       (interactive)
-       (setq-local indent-tabs-mode (not indent-tabs-mode)))
-   #+END_SRC
-
 * TODOS
 ** [[https://github.com/abo-abo/org-download][org-download]]
 ** [[http://emacsworld.blogspot.in/2008/12/generating-automatic-file-headers.html][Automatic file headers]] [[https://emacs.stackexchange.com/questions/11005/how-change-the-contents-of-a-package-header2-el][here]]
-** [[https://github.com/pashky/restclient.el][restclient]]
-** [[http://tkf.github.io/emacs-request/][request.el]]
-** [[https://github.com/remyhonig/elfeed-org][elfeed-org]]
 ** [[https://notmuchmail.org/notmuch-emacs/][notmuch]]
-** Get better at projectile
-** Setup Emacs for PHP
-** Get current Spotify track
-** =use-theme= macro
+** [[https://github.crookster.org/switching-to-straight.el-from-emacs-26-builtin-package.el/][Switch to straight.el]]
